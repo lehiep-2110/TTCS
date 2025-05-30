@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>403 - Không có quyền</title>
+    <link href="/client/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 text-center">
+                <h1 class="display-1 text-warning">403</h1>
+                <h2>Không có quyền truy cập</h2>
+                <p class="lead"><%= message || 'Bạn không có quyền truy cập trang này' %></p>
+                <a href="/" class="btn btn-primary">Về trang chủ</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

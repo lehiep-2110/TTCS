@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Sửa sản phẩm</title>
+</head>
+<body>
+  <h1>Sửa sản phẩm</h1>
+  <form action="/admin/products/edit/<%= product.product_id %>" method="POST">
+    <div>
+      <label for="name">Tên sản phẩm:</label>
+      <input type="text" id="name" name="name" value="<%= product.name %>" required>
+    </div>
+    <div>
+      <label for="price">Giá:</label>
+      <input type="number" id="price" name="price" value="<%= product.price %>" required>
+    </div>
+    <div>
+      <label for="stock">Số Lượng:</label>
+      <input type="number" id="stock" name="stock" value="<%= product.stock %>" required>
+    </div>
+    <div>
+      <label for="category">Danh mục:</label>
+      <select id="category" name="category_id" required>
+        <% categories.forEach(function(category) { %>
+          <option value="<%= category.category_id %>" <%= category.id === product.category_id ? 'selected' : '' %>>
+            <%= category.category_name %>
+          </option>
+        <% }) %>
+      </select>
+    </div>
+    <div>
+      <label for="description">Mô tả:</label>
+      <textarea id="description" name="description"><%= product.description %></textarea>
+    </div>
+    <button type="submit">Cập nhật</button>
+    <a href="/admin/product">Hủy</a>
+  </form>
+</body>
+</html>

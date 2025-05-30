@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= pageTitle %></title>
+    <link href="/client/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Thêm vào phần <head> của profile.ejs -->
+    <style>
+        /* Fix dropdown z-index issue */
+        .dropdown-menu {
+            z-index: 1050;
+        }
+        
+        /* Ensure dropdown button works */
+        .dropdown-toggle::after {
+            border-top: .3em solid;
+            border-right: .3em solid transparent;
+            border-bottom: 0;
+            border-left: .3em solid transparent;
+        }
+    </style>
+</head>
+<body>
+    <%- include('../layout/header') -%>
+    
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">
+                            <i class="fas fa-user me-2"></i>Hồ sơ cá nhân
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- Error/Success Messages -->
+                        <% if (error) { %>
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="fas fa-exclamation-triangle me-2"></i><%= error %>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        <% } %>
+                        <% if (success) { %>
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="fas fa-check-circle me-2"></i><%= success %>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        <% } %>
+                        
+                        <!-- Profile Form -->
+                        <form method="POST" action="/login/profile">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="username" class="form-label">
+                                            <i class="fas fa-user me-1"></i>Tên đăng nhập: <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" class="form-control" id="username" name="username" 
+                                               value="<%= user.username %>" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">
+                                            <i class="fas fa-envelope me-1"></i>Email: <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="email" class="form-control" id="email" name="email" 
+                                               value="<%= user.email %>" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="full_name" class="form-label">
+                                    <i class="fas fa-id-card me-1"></i>Họ và tên: <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="full_name" name="full_name" 
+                                       value="<%= user.full_name %>" required>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="phone" class="form-label">
+                                            <i class="fas fa-phone me-1"></i>Số điện thoại:
+                                        </label>
+                                        <input type="tel" class="form-control" id="phone" name="phone" 
+                                               value="<%= user.phone || '' %>" placeholder="Số điện thoại...">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="address" class="form-label">
+                                    <i class="fas fa-map-marker-alt me-1"></i>Địa chỉ:
+                                </label>
+                                <textarea class="form-control" id="address" name="address" rows="3" 
+                                          placeholder="Địa chỉ của bạn..."><%= user.address || '' %></textarea>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-2"></i>Cập nhật thông tin
+                                    </button>
+                                    <a href="/login/orders" class="btn btn-outline-secondary">
+                                        <i class="fas fa-shopping-bag me-2"></i>Xem đơn hàng
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Change Password Card -->
+                <div class="card shadow mt-4">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0">
+                            <i class="fas fa-key me-2"></i>Đổi mật khẩu
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="/login/change-password" id="changePasswordForm">
+                            <div class="mb-3">
+                                <label for="currentPassword" class="form-label">Mật khẩu hiện tại:</label>
+                                <input type="password" class="form-control" id="currentPassword" name="currentPassword" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="newPassword" class="form-label">Mật khẩu mới:</label>
+                                <input type="password" class="form-control" id="newPassword" name="newPassword" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="confirmPassword" class="form-label">Xác nhận mật khẩu mới:</label>
+                                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                            </div>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-key me-2"></i>Đổi mật khẩu
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <%- include('../layout/footer') -%>
+    
+    <!-- ⚠️ QUAN TRỌNG: Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Form Validation -->
+    <script>
+        // Auto hide alerts after 5 seconds
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+        
+        // Password change validation
+        document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (newPassword !== confirmPassword) {
+                e.preventDefault();
+                alert('Mật khẩu mới và xác nhận mật khẩu không khớp!');
+                return false;
+            }
+            
+            if (newPassword.length < 6) {
+                e.preventDefault();
+                alert('Mật khẩu mới phải có ít nhất 6 ký tự!');
+                return false;
+            }
+        });
+    </script>
+</body>
+</html>

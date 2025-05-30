@@ -1,0 +1,33 @@
+<form action="/admin/product/add" method="POST">
+  <div class="mb-3">
+    <label for="name" class="form-label">Tên bánh</label>
+    <input type="text" class="form-control" id="name" name="name" required />
+  </div>
+  <div class="mb-3">
+    <label for="description" class="form-label">Mô tả</label>
+    <textarea class="form-control" id="description" name="description"></textarea>
+  </div>
+  <div class="mb-3">
+    <label for="price" class="form-label">Giá</label>
+    <input type="number" class="form-control" id="price" name="price" required />
+  </div>
+  <div class="mb-3">
+    <label for="stock" class="form-label">Số lượng</label>
+    <input type="number" class="form-control" id="stock" name="stock" required />
+  </div>
+  <div class="mb-3">
+    <label for="image_url" class="form-label">URL hình ảnh</label>
+    <input type="text" class="form-control" id="image_url" name="image_url" />
+  </div>
+  <div class="mb-3">
+    <label for="category_id" class="form-label">Loại bánh</label>
+    <select class="form-select" name="category_id" id="category_id" required>
+      <% categories.forEach(category => { %>
+        <option value="<%= category.category_id %>"><%= category.category_name %></option>
+      <% }) %>
+    </select>
+  </div>
+  <button type="submit" class="btn btn-primary">Thêm bánh</button>
+  <a href="/admin/product">Hủy</a>
+</form>
+    

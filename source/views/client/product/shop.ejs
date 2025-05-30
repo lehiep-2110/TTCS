@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop - Hype Cake</title>
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Raleway:wght@600;800&display=swap" rel="stylesheet"> 
+
+    <!-- Icon Font Stylesheet -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="/client/lib/lightbox/css/lightbox.min.css" rel="stylesheet">
+    <link href="/client/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="/client/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="/client/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <%- include('../layout/header') -%>
+
+    <!-- Page Header Start -->
+    <div class="container-fluid page-header py-5">
+        <h1 class="text-center text-white display-6">Shop</h1>
+    </div>
+    <!-- Page Header End -->
+
+    <!-- Fruits Shop Start-->
+    <div class="container-fluid fruite py-5">
+        <div class="container py-5">
+            <h1 class="mb-4">Tiệm Bánh HypeCake</h1>
+            <div class="row g-4">
+                <div class="col-lg-12">
+                    <div class="row g-4">
+                        <div class="col-xl-3">
+                            <!-- Search Box -->
+                            <div class="input-group w-100 mx-auto d-flex">
+                                <form action="/product" method="GET" class="d-flex w-100">
+                                    <input type="search" name="search" class="form-control p-3" 
+                                           placeholder="Tìm kiếm bánh..." 
+                                           value="<%= searchKeyword || '' %>"
+                                           aria-describedby="search-icon-1">
+                                    <button type="submit" class="input-group-text p-3" id="search-icon-1">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-6"></div>
+                        <div class="col-xl-3">
+                            <!-- Sort Dropdown -->
+                            <div class="bg-light ps-3 py-3 rounded d-flex justify-content-between mb-4">
+                                <label for="fruits">Sắp xếp theo:</label>
+                                <select id="fruits" name="fruitlist" class="border-0 form-select-sm bg-light me-3" onchange="sortProducts(this.value)">
+                                    <option value="default">Mặc định</option>
+                                    <option value="name">Tên A-Z</option>
+                                    <option value="price-low">Giá thấp đến cao</option>
+                                    <option value="price-high">Giá cao đến thấp</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-lg-3">
+                            <!-- Categories Sidebar -->
+                            <div class="row g-4">
+                                <div class="col-lg-12">
+                                    <div class="mb-3">
+                                        <h4>Danh mục</h4>
+                                        <ul class="list-unstyled fruite-categorie">
+                                            <li>
+                                                <div class="d-flex justify-content-between fruite-name">
+                                                    <a href="/product" class="<%= !selectedCategory ? 'text-primary fw-bold' : '' %>">
+                                                        <i class="fas fa-list me-2"></i>Tất cả
+                                                    </a>
+                                                    <span>(<%= products.length %>)</span>
+                                                </div>
+                                            </li>
+                                            <% categories.forEach(category => { %>
+                                                <li>
+                                                    <div class="d-flex justify-content-between fruite-name">
+                                                        <a href="/product?category=<%= category.category_id %>" 
+                                                           class="<%= selectedCategory == category.category_id ? 'text-primary fw-bold' : '' %>">
+                                                            <i class="fas fa-birthday-cake me-2"></i><%= category.category_name %>
+                                                        </a>
+                                                        <span>(<%= products.filter(p => p.category_id == category.category_id).length %>)</span>
+                                                    </div>
+                                                </li>
+                                            <% }) %>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-9">
+                            <!-- Products Grid -->
+                            <div class="row g-4 justify-content-center">
+                                <% if (products && products.length > 0) { %>
+                                    <% products.forEach(product => { %>
+                                        <div class="col-md-6 col-lg-6 col-xl-4">
+                                            <div class="rounded position-relative fruite-item">
+                                                <div class="fruite-img">
+                                                    <a href="/product/<%= product.product_id %>">
+                                                        <img src="<%= product.image_url %>" class="img-fluid w-100 rounded-top" alt="<%= product.name %>">
+                                                    </a>
+                                                </div>
+                                                <div class="text-white bg-secondary px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">
+                                                    <%= product.category_name %>
+                                                </div>
+                                                <div class="p-4 border border-secondary border-top-0 rounded-bottom">
+                                                    <h4><a href="/product/<%= product.product_id %>" class="text-decoration-none"><%= product.name %></a></h4>
+                                                    <p><%= product.description %></p>
+                                                    <div class="d-flex justify-content-between flex-lg-wrap">
+                                                        <p class="text-dark fs-5 fw-bold mb-0"><%= product.price.toLocaleString() %> VNĐ</p>
+                                                        
+                                                        <!-- Form thêm vào giỏ hàng với quantity -->
+                                                        <form method="POST" action="/cart/add/<%= product.product_id %>" class="d-flex align-items-center">
+                                                            <div class="input-group me-2" style="width: 100px;">
+                                                                <button class="btn btn-sm btn-outline-secondary" type="button" onclick="decreaseQuantity(this)">-</button>
+                                                                <input type="number" name="quantity" class="form-control form-control-sm text-center" value="1" min="1" max="99">
+                                                                <button class="btn btn-sm btn-outline-secondary" type="button" onclick="increaseQuantity(this)">+</button>
+                                                            </div>
+                                                            <button type="submit" class="btn border border-secondary rounded-pill px-3 text-primary">
+                                                                <i class="fa fa-shopping-bag me-2 text-primary"></i> Thêm
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <% }) %>
+                                <% } else { %>
+                                    <div class="col-12">
+                                        <div class="text-center py-5">
+                                            <h4>Không tìm thấy sản phẩm nào</h4>
+                                            <% if (searchKeyword) { %>
+                                                <p>Không có kết quả cho từ khóa: "<%= searchKeyword %>"</p>
+                                                <a href="/product" class="btn btn-primary">Xem tất cả sản phẩm</a>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Fruits Shop End-->
+
+    <!-- Footer -->
+    <%- include('../layout/footer') -%>
+
+    <!-- ⚠️ SỬA: Thay thế JavaScript để dropdown hoạt động -->
+    <!-- jQuery (có thể giữ từ local) -->
+    <script src="/client/js/jquery.min.js"></script>
+    
+    <!-- ✅ QUAN TRỌNG: Bootstrap JavaScript từ CDN để đảm bảo dropdown hoạt động -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Other libraries -->
+    <script src="/client/lib/lightbox/js/lightbox.min.js"></script>
+    <script src="/client/lib/owlcarousel/owl.carousel.min.js"></script>
+    
+    <script>
+        // Sort products function
+        function sortProducts(sortBy) {
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('sort', sortBy);
+            window.location.search = urlParams.toString();
+        }
+
+        // Quantity buttons functions
+        function decreaseQuantity(button) {
+            const input = button.parentNode.querySelector('input[name="quantity"]');
+            if (input.value > 1) {
+                input.value = parseInt(input.value) - 1;
+            }
+        }
+        
+        function increaseQuantity(button) {
+            const input = button.parentNode.querySelector('input[name="quantity"]');
+            if (input.value < 99) {
+                input.value = parseInt(input.value) + 1;
+            }
+        }
+
+        // DOM Ready functions
+        document.addEventListener('DOMContentLoaded', function() {
+            // ✅ THÊM: Debug dropdown functionality
+            console.log('Bootstrap loaded:', typeof bootstrap !== 'undefined');
+            console.log('Dropdown elements:', document.querySelectorAll('[data-bs-toggle="dropdown"]'));
+            
+            // Initialize dropdowns manually if needed
+            document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(function(element) {
+                new bootstrap.Dropdown(element);
+            });
+
+            // Prevent form submission khi click quantity buttons
+            document.querySelectorAll('.btn-outline-secondary').forEach(button => {
+                if (button.textContent.trim() === '+' || button.textContent.trim() === '-') {
+                    button.addEventListener('click', function(e) {
+                        e.preventDefault();
+                    });
+                }
+            });
+
+            // Handle form submission với loading
+            document.querySelectorAll('form[action*="/cart/add/"]').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i>Đang thêm...';
+                    
+                    // Re-enable sau 3 giây để tránh spam
+                    setTimeout(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fa fa-shopping-bag me-2 text-primary"></i> Thêm';
+                    }, 3000);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

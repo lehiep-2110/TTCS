@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Chi tiết đơn hàng #<%= order.order_id %></title>
+    <link href="/Admin/css/styles.css" rel="stylesheet" />
+</head>
+<body class="sb-nav-fixed">
+    <%- include('../layout/header') -%>
+    <div id="layoutSidenav">
+        <%- include('../layout/sidenav') -%>
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid px-4">
+                    <h1 class="mt-4">Chi tiết đơn hàng #<%= order.order_id %></h1>
+                    
+                    <div class="row">
+                        <!-- Order Info -->
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>Thông tin đơn hàng</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Khách hàng:</strong> <%= order.fullname %> (@<%= order.username %>)</p>
+                                    <p><strong>Email:</strong> <%= order.email %></p>
+                                    <p><strong>Địa chỉ giao hàng:</strong> <%= order.shipping_address %></p>
+                                    <p><strong>Phương thức thanh toán:</strong> <%= order.payment_method %></p>
+                                    <p><strong>Tổng tiền:</strong> <span class="text-primary"><%= order.total_amount.toLocaleString() %> VNĐ</span></p>
+                                    <p><strong>Ngày đặt:</strong> <%= new Date(order.created_at).toLocaleString('vi-VN') %></p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Status Update -->
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>Cập nhật trạng thái</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form method="POST" action="/admin/orders/<%= order.order_id %>/status">
+                                        <div class="mb-3">
+                                            <label class="form-label">Trạng thái hiện tại:</label>
+                                            <select class="form-control" name="status">
+                                                <option value="pending" <%= order.status === 'pending' ? 'selected' : '' %>>Chờ xử lý</option>
+                                                <option value="confirmed" <%= order.status === 'confirmed' ? 'selected' : '' %>>Đã xác nhận</option>
+                                                <option value="shipping" <%= order.status === 'shipping' ? 'selected' : '' %>>Đang giao hàng</option>
+                                                <option value="delivered" <%= order.status === 'delivered' ? 'selected' : '' %>>Đã giao hàng</option>
+                                                <option value="cancelled" <%= order.status === 'cancelled' ? 'selected' : '' %>>Đã hủy</option>
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Cập nhật trạng thái</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Order Items -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5>Sản phẩm trong đơn hàng</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Sản phẩm</th>
+                                            <th>Đơn giá</th>
+                                            <th>Số lượng</th>
+                                            <th>Thành tiền</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% order.items.forEach(item => { %>
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <% if (item.image_url) { %>
+                                                            <img src="<%= item.image_url %>" alt="<%= item.name %>" style="width: 50px; height: 50px; object-fit: cover;" class="me-3">
+                                                        <% } %>
+                                                        <strong><%= item.name %></strong>
+                                                    </div>
+                                                </td>
+                                                <td><%= item.price.toLocaleString() %> VNĐ</td>
+                                                <td><%= item.quantity %></td>
+                                                <td><%= (item.price * item.quantity).toLocaleString() %> VNĐ</td>
+                                            </tr>
+                                        <% }) %>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="fw-bold">
+                                            <td colspan="3">Tổng cộng:</td>
+                                            <td class="text-primary"><%= order.total_amount.toLocaleString() %> VNĐ</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <a href="/admin/orders" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách
+                        </a>
+                    </div>
+                </div>
+            </main>
+            <%- include('../layout/footer') -%>
+        </div>
+    </div>
+</body>
+</html>

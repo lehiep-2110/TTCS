@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%= pageTitle %></title>
+    <link href="/client/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <%- include('../layout/header') -%>
+    
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 text-center">
+                <div class="card">
+                    <div class="card-body py-5">
+                        <i class="fa fa-check-circle fa-5x text-success mb-4"></i>
+                        <h2 class="text-success">Đặt hàng thành công!</h2>
+                        
+                        <% if (order) { %>
+                            <p class="lead">Mã đơn hàng của bạn: <strong>#<%= order.order_id %></strong></p>
+                            <p>Tổng tiền: <strong><%= order.total_amount.toLocaleString() %> VNĐ</strong></p>
+                            <p class="text-muted">Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất để xác nhận đơn hàng.</p>
+                        <% } else { %>
+                            <p class="lead">Cảm ơn bạn đã đặt hàng!</p>
+                            <p class="text-muted">Chúng tôi sẽ xử lý đơn hàng của bạn trong thời gian sớm nhất.</p>
+                        <% } %>
+                        
+                        <div class="mt-4">
+                            <a href="/login/orders" class="btn btn-primary me-2">
+                                <i class="fa fa-list me-2"></i>Xem đơn hàng
+                            </a>
+                            <a href="/product" class="btn btn-outline-primary">
+                                <i class="fa fa-shopping-bag me-2"></i>Tiếp tục mua sắm
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <%- include('../layout/footer') -%>
+</body>
+</html>

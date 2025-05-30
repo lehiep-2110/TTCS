@@ -1,0 +1,41 @@
+<div class="container mt-5">
+  <h2>Thêm người dùng mới</h2>
+  <form action="/admin/user/add" method="POST">
+    <div class="mb-3">
+      <label for="username" class="form-label">Tên đăng nhập</label>
+      <input type="text" class="form-control" id="username" name="username" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="fullname" class="form-label">Họ tên</label>
+      <input type="text" class="form-control" id="fullname" name="fullname" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="password" class="form-label">Mật khẩu</label>
+      <input type="password" class="form-control" id="password" name="password" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input type="email" class="form-control" id="email" name="email" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="address" class="form-label">Địa chỉ</label>
+      <input type="text" class="form-control" id="address" name="address">
+    </div>
+
+    <div class="mb-3">
+      <label for="role_id" class="form-label">Quyền</label>
+      <select class="form-select" name="role_id" id="role_id">
+        <% roles.forEach(role => { %>
+          <option value="<%= role.role_id %>"><%= role.role_name %></option>
+        <% }) %>
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Thêm</button>
+    <a href="/admin/user" class="btn btn-secondary">Hủy</a>
+  </form>
+</div>

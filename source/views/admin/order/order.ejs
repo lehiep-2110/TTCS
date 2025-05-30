@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="Hype Cake" />
+    <meta name="author" content="lehype" />
+    <title>Quản lý đơn hàng</title>
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+    <link href="/Admin/css/styles.css" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+</head>
+
+<body class="sb-nav-fixed">
+    <%- include('../layout/header') -%>
+    <div id="layoutSidenav">
+        <%- include('../layout/sidenav') -%>
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid px-4">
+                    <h1 class="mt-4">Quản lý đơn hàng</h1>
+                    <ol class="breadcrumb mb-4">
+                        <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Đơn hàng</li>
+                    </ol>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-table me-1"></i>
+                            Danh sách đơn hàng
+                        </div>
+                        <div class="card-body">
+                            <% if (orders && orders.length > 0) { %>
+                            <table id="datatablesSimple">
+                                <thead>
+                                    <tr>
+                                        <th>Mã đơn hàng</th>
+                                        <th>Khách hàng</th>
+                                        <th>Số sản phẩm</th>
+                                        <th>Tổng tiền</th>
+                                        <th>Trạng thái</th>
+                                        <th>Ngày đặt</th>
+                                        <th>Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% orders.forEach(order => { %>
+                                    <tr>
+                                        <td>#<%= order.order_id %></td>
+                                        <td>
+                                            <strong><%= order.fullname %></strong><br>
+                                            <small class="text-muted">@<%= order.username %></small>
+                                        </td>
+                                        <td><%= order.item_count %> sản phẩm</td>
+                                        <td><%= order.total_amount.toLocaleString() %> VNĐ</td>
+                                        <td>
+                                            <% 
+                                                        let statusClass = '';
+                                                        let statusText = '';
+                                                        switch(order.status) {
+                                                            case 'pending':
+                                                                statusClass = 'bg-warning';
+                                                                statusText = 'Chờ xử lý';
+                                                                break;
+                                                            case 'confirmed':
+                                                                statusClass = 'bg-info';
+                                                                statusText = 'Đã xác nhận';
+                                                                break;
+                                                            case 'shipping':
+                                                                statusClass = 'bg-primary';
+                                                                statusText = 'Đang giao';
+                                                                break;
+                                                            case 'delivered':
+                                                                statusClass = 'bg-success';
+                                                                statusText = 'Đã giao';
+                                                                break;
+                                                            case 'cancelled':
+                                                                statusClass = 'bg-danger';
+                                                                statusText = 'Đã hủy';
+                                                                break;
+                                                        }
+                                                    %>
+                                            <span class="badge <%= statusClass %>"><%= statusText %></span>
+                                        </td>
+                                        <td><%= new Date(order.created_at).toLocaleDateString('vi-VN') %></td>
+                                        <td>
+                                            <a href="/admin/orders/<%= order.order_id %>" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-eye"></i> Xem
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                            <% } else { %>
+                            <div class="text-center py-4">
+                                <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                                <h5>Chưa có đơn hàng nào</h5>
+                                <p class="text-muted">Đơn hàng sẽ hiển thị tại đây khi có khách đặt hàng.</p>
+                            </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <%- include('../layout/footer') -%>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
+    <script src="/Admin/js/scripts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js"
+        crossorigin="anonymous"></script>
+    <script src="/Admin/js/datatables-simple-demo.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= pageTitle %></title>
+    <link href="/client/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card mt-5">
+                    <div class="card-header">
+                        <h3 class="text-center">Đăng nhập</h3>
+                    </div>
+                    <div class="card-body">
+                        <% if (error) { %>
+                            <div class="alert alert-danger"><%= error %></div>
+                        <% } %>
+                        <% if (success) { %>
+                            <div class="alert alert-success"><%= success %></div>
+                        <% } %>
+                        
+                        <form method="POST" action="/login">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Tên đăng nhập:</label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Mật khẩu:</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
+                        </form>
+                        
+                        <div class="text-center mt-3">
+                            <p>Chưa có tài khoản? <a href="/signup">Đăng ký ngay</a></p>
+                            <a href="/">Về trang chủ</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
