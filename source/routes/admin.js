@@ -22,10 +22,11 @@ router.post('/users/delete/:id', adminController.handleDeleteUser); // Cần s�
 // === PRODUCT MANAGEMENT ===
 router.get('/products', adminController.getAdminProductPage);
 router.get('/products/add', adminController.showAddProductForm);
-router.post('/products/add', adminController.handleAddProduct); // Cần sửa tên method
+router.post('/products/add', adminController.handleAddProduct);
 router.get('/products/edit/:id', adminController.showEditProductForm);
-router.post('/products/edit/:id', adminController.handleEditProduct); // Cần sửa tên method
-router.post('/products/delete/:id', adminController.handleDeleteProduct); // Cần sửa tên method
+router.post('/products/edit/:id', adminController.handleEditProduct);
+router.post('/products/delete/:id', adminController.handleDeleteProduct);
+router.post('/products/restore/:id', adminController.handleRestoreProduct); // Thêm route restore
 
 // === ORDER MANAGEMENT ===
 router.get('/orders', orderController.getAdminOrderPage);

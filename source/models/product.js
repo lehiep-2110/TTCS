@@ -29,6 +29,23 @@ class Product {
         }
     }
 
+    // Thêm method lấy tất cả sản phẩm cho admin (bao gồm cả inactive)
+    async getAllProductsForAdmin() {
+        try {
+            const query = `
+                SELECT p.*, c.category_name 
+                FROM products p
+                LEFT JOIN category c ON p.category_id = c.category_id
+                ORDER BY p.created_at DESC
+            `;
+            const [rows] = await db.query(query);
+            return rows;
+        } catch (error) {
+            console.error('Lỗi getAllProductsForAdmin:', error);
+            throw error;
+        }
+    }
+
     async getProductById(id) {
         try {
             const query = `
@@ -41,6 +58,23 @@ class Product {
             return rows[0];
         } catch (error) {
             console.error('Lỗi getProductById:', error);
+            throw error;
+        }
+    }
+
+    // Thêm method lấy sản phẩm theo ID cho admin (không cần check status)
+    async getProductByIdForAdmin(id) {
+        try {
+            const query = `
+                SELECT p.*, c.category_name 
+                FROM products p
+                LEFT JOIN category c ON p.category_id = c.category_id
+                WHERE p.product_id = ?
+            `;
+            const [rows] = await db.query(query, [id]);
+            return rows[0];
+        } catch (error) {
+            console.error('Lỗi getProductByIdForAdmin:', error);
             throw error;
         }
     }
@@ -85,10 +119,10 @@ class Product {
         const { name, price, stock, category_id, description, image_url } = productData;
         try {
             const query = `
-                INSERT INTO products (name, price, stock, category_id, description, image_url, status, created_at) 
-                VALUES (?, ?, ?, ?, ?, ?, 'active', NOW())
+                INSERT INTO products (name, price, category_id, description, image_url, status, created_at, updated_at) 
+                VALUES (?, ?, ?, ?, ?, 'active', NOW(), NOW())
             `;
-            const [result] = await db.query(query, [name, price, stock, category_id, description, image_url]);
+            const [result] = await db.query(query, [name, price, category_id, description, image_url]);
             return result;
         } catch (error) {
             console.error('Lỗi createProduct:', error);
@@ -97,14 +131,19 @@ class Product {
     }
 
     async updateProduct(productId, productData) {
-        const { name, price, stock, category_id, description, image_url, status } = productData;
+        const { name, price, category_id, description, image_url, status } = productData;
         try {
+            // Validate status
+            if (status && !['active', 'inactive'].includes(status)) {
+                throw new Error('Status phải là active hoặc inactive');
+            }
+
             const query = `
                 UPDATE products 
-                SET name = ?, price = ?, stock = ?, category_id = ?, description = ?, image_url = ?, status = ?
+                SET name = ?, price = ?, category_id = ?, description = ?, image_url = ?, status = ?, updated_at = NOW()
                 WHERE product_id = ?
             `;
-            const [result] = await db.query(query, [name, price, stock, category_id, description, image_url, status, productId]);
+            const [result] = await db.query(query, [name, price, category_id, description, image_url, status || 'active', productId]);
             return result;
         } catch (error) {
             console.error('Lỗi updateProduct:', error);
@@ -112,14 +151,61 @@ class Product {
         }
     }
 
+    // Sửa lại deleteProduct - chuyển status thành 'inactive'
     async deleteProduct(productId) {
         try {
-            // Soft delete
-            const query = 'UPDATE products SET status = "deleted" WHERE product_id = ?';
+            // Kiểm tra sản phẩm có tồn tại không
+            const existingProduct = await this.getProductByIdForAdmin(productId);
+            if (!existingProduct) {
+                throw new Error('Sản phẩm không tồn tại');
+            }
+
+            // Soft delete: chuyển status thành 'inactive'
+            const query = 'UPDATE products SET status = "inactive", updated_at = NOW() WHERE product_id = ?';
             const [result] = await db.query(query, [productId]);
+            
+            if (result.affectedRows === 0) {
+                throw new Error('Không thể xóa sản phẩm');
+            }
+
             return result;
         } catch (error) {
             console.error('Lỗi deleteProduct:', error);
+            throw error;
+        }
+    }
+
+    // Thêm method khôi phục sản phẩm
+    async restoreProduct(productId) {
+        try {
+            const query = 'UPDATE products SET status = "active", updated_at = NOW() WHERE product_id = ?';
+            const [result] = await db.query(query, [productId]);
+            
+            if (result.affectedRows === 0) {
+                throw new Error('Không thể khôi phục sản phẩm');
+            }
+
+            return result;
+        } catch (error) {
+            console.error('Lỗi restoreProduct:', error);
+            throw error;
+        }
+    }
+
+    // Lấy sản phẩm đã ẩn (inactive)
+    async getInactiveProducts() {
+        try {
+            const query = `
+                SELECT p.*, c.category_name 
+                FROM products p
+                LEFT JOIN category c ON p.category_id = c.category_id
+                WHERE p.status = 'inactive'
+                ORDER BY p.updated_at DESC
+            `;
+            const [rows] = await db.query(query);
+            return rows;
+        } catch (error) {
+            console.error('Lỗi getInactiveProducts:', error);
             throw error;
         }
     }

@@ -108,8 +108,12 @@ class AdminController {
 
     async getAdminProductPage(req, res) {
         try {
-            const products = await Product.getAllProducts();
-            res.render('admin/product/product', { products });
+
+            const products = await Product.getAllProductsForAdmin();
+            res.render('admin/product/product', { 
+                products,
+                pageTitle: 'Quản lý sản phẩm'
+            });
         } catch (error) {
             console.error('Lỗi lấy danh sách product:', error);
             res.status(500).send('Lỗi server');
@@ -165,6 +169,18 @@ class AdminController {
         } catch (error) {
             console.error('Lỗi xóa product:', error);
             res.status(500).send('Lỗi server');
+        }
+    }
+
+    // Sửa lại method handleRestoreProduct
+    async handleRestoreProduct(req, res) {
+        try {
+            const productId = req.params.id;
+            await Product.restoreProduct(productId);
+            res.redirect('/admin/products');
+        } catch (error) {
+            console.error('Lỗi khôi phục product:', error);
+            res.redirect('/admin/products');
         }
     }
 }

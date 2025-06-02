@@ -3,6 +3,74 @@ const Cart = require('../models/cart');
 const User = require('../models/user');
 
 class OrderController {
+    async getOrders(req, res) {
+        try {
+            const userId = req.session.user.user_id;
+            const orders = await Order.getOrdersByUserId(userId);
+            
+            res.render('client/order/orders', {
+                pageTitle: 'Đơn hàng của tôi',
+                orders,
+                user: req.session.user
+            });
+        } catch (error) {
+            console.error('Lỗi getOrders:', error);
+            res.status(500).send('Lỗi server');
+        }
+    }
+
+    // THÊM: Lấy chi tiết đơn hàng cho user
+    async getOrderDetail(req, res) {
+        try {
+            const orderId = req.params.id;
+            const userId = req.session.user.user_id;
+            
+            const order = await Order.getOrderById(orderId);
+            
+            // Kiểm tra đơn hàng có thuộc về user này không
+            if (!order || order.user_id !== userId) {
+                return res.status(404).render('client/error/404', {
+                    pageTitle: 'Không tìm thấy',
+                    message: 'Đơn hàng không tồn tại hoặc bạn không có quyền xem'
+                });
+            }
+
+            res.render('client/order/order-detail', {
+                pageTitle: `Đơn hàng #${order.order_id}`,
+                order,
+                user: req.session.user
+            });
+        } catch (error) {
+            console.error('Lỗi getOrderDetail:', error);
+            res.status(500).send('Lỗi server');
+        }
+    }
+    
+    async cancelOrder(req, res) {
+        try {
+            const orderId = req.params.id;
+            const userId = req.session.user.user_id;
+            
+            const order = await Order.getOrderById(orderId);
+            
+            // Kiểm tra quyền và trạng thái đơn hàng
+            if (!order || order.user_id !== userId) {
+                return res.redirect('/orders?error=Không tìm thấy đơn hàng');
+            }
+            
+            if (order.status !== 'pending') {
+                return res.redirect('/orders?error=Không thể hủy đơn hàng này');
+            }
+            
+            await Order.updateOrderStatus(orderId, 'cancelled');
+            
+            res.redirect('/orders?success=Đã hủy đơn hàng thành công');
+        } catch (error) {
+            console.error('Lỗi cancelOrder:', error);
+            res.redirect('/orders?error=Không thể hủy đơn hàng');
+        }
+    }
+
     async getCheckoutPage(req, res) {
         try {
             const userId = req.session.user.user_id;
@@ -32,14 +100,12 @@ class OrderController {
     async processCheckout(req, res) {
         try {
             const userId = req.session.user.user_id;
-            // SỬA: Thêm phone field
             const { shipping_address, phone, notes, payment_method } = req.body;
             
             if (!shipping_address || !phone) {
                 return res.redirect('/cart/checkout?error=Vui lòng nhập đầy đủ địa chỉ và số điện thoại');
             }
 
-            // Validate phone format
             const phoneRegex = /^[0-9]{10,11}$/;
             if (!phoneRegex.test(phone)) {
                 return res.redirect('/cart/checkout?error=Số điện thoại không hợp lệ');
@@ -52,7 +118,6 @@ class OrderController {
             
             const cartTotal = await Cart.getCartTotal(userId);
             
-            // SỬA: Thêm phone và notes vào orderData
             const orderData = {
                 user_id: userId,
                 total_amount: cartTotal,

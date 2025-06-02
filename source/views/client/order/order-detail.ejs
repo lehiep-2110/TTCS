@@ -15,7 +15,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
-                <li class="breadcrumb-item"><a href="/login/orders">Đơn hàng của tôi</a></li>
+                <li class="breadcrumb-item"><a href="/order">Đơn hàng của tôi</a></li>
                 <li class="breadcrumb-item active">Chi tiết đơn hàng #<%= order.order_id %></li>
             </ol>
         </nav>
@@ -215,28 +215,22 @@
                 </div>
             </div>
             
-            <!-- Action Buttons -->
+            <!-- Action Buttons - FORM SUBMISSION -->
             <div class="row mt-4">
                 <div class="col-12 text-center">
-                    <a href="/login/orders" class="btn btn-secondary me-2">
+                    <a href="/order" class="btn btn-secondary me-2">
                         <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách
                     </a>
                     
+                    <!-- Hủy đơn hàng - FORM SUBMISSION -->
                     <% if (order.status === 'pending') { %>
-                        <button type="button" class="btn btn-warning me-2" onclick="cancelOrder(<%= order.order_id %>)">
-                            <i class="fas fa-times me-2"></i>Hủy đơn hàng
-                        </button>
+                        <form action="/order/<%= order.order_id %>/cancel" method="POST" style="display: inline;" 
+                              onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?')">
+                            <button type="submit" class="btn btn-warning me-2">
+                                <i class="fas fa-times me-2"></i>Hủy đơn hàng
+                            </button>
+                        </form>
                     <% } %>
-                    
-                    <% if (order.status === 'delivered') { %>
-                        <button type="button" class="btn btn-success me-2" onclick="reorder(<%= order.order_id %>)">
-                            <i class="fas fa-redo me-2"></i>Đặt lại
-                        </button>
-                    <% } %>
-                    
-                    <button type="button" class="btn btn-info" onclick="window.print()">
-                        <i class="fas fa-print me-2"></i>In đơn hàng
-                    </button>
                 </div>
             </div>
             
@@ -249,7 +243,7 @@
                             <i class="fas fa-exclamation-triangle fa-5x text-warning mb-4"></i>
                             <h4>Không tìm thấy đơn hàng</h4>
                             <p class="text-muted">Đơn hàng không tồn tại hoặc bạn không có quyền truy cập.</p>
-                            <a href="/login/orders" class="btn btn-primary">
+                            <a href="/order" class="btn btn-primary">
                                 <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách
                             </a>
                         </div>
@@ -310,22 +304,5 @@
             font-weight: bold;
         }
     </style>
-    
-    <!-- JavaScript -->
-    <script>
-        function cancelOrder(orderId) {
-            if (confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?')) {
-                // TODO: Implement cancel functionality
-                alert('Chức năng hủy đơn hàng đang được phát triển!');
-            }
-        }
-        
-        function reorder(orderId) {
-            if (confirm('Bạn có muốn đặt lại đơn hàng này không?')) {
-                // TODO: Implement reorder functionality
-                alert('Chức năng đặt lại đang được phát triển!');
-            }
-        }
-    </script>
 </body>
 </html>

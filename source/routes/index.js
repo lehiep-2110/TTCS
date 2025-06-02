@@ -6,7 +6,8 @@ const cartRouter = require('./cart');
 const loginRouter = require('./login');
 const signupRouter = require('./signup');
 const adminRouter = require('./admin');
-
+const orderRouter = require('./order');
+const userRouter = require('./user');
 // Import middleware
 const setViewData = require('../middleware/viewData');
 
@@ -21,7 +22,8 @@ function route(app) {
     app.use('/login', loginRouter);        
     app.use('/signup', signupRouter);      
     app.use('/admin', adminRouter);        
-    
+    app.use('/order', orderRouter);
+    app.use('/user', userRouter);
     // 404 handler
     app.use((req, res) => {
         res.status(404).render('error/404', {
