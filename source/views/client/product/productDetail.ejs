@@ -95,17 +95,6 @@
                                         <i class="fa fa-shopping-bag me-2 text-primary"></i> Thêm vào giỏ hàng
                                     </button>
                                 </form>
-                                
-                                <!-- Buy Now Button (Optional) -->
-                                <% if (typeof user !== 'undefined' && user) { %>
-                                    <a href="/checkout/direct/<%= product.product_id %>" class="btn btn-primary rounded-pill px-4 py-2 mb-4 ms-2">
-                                        <i class="fa fa-credit-card me-2"></i> Mua ngay
-                                    </a>
-                                <% } else { %>
-                                    <a href="/login?redirect=/product/<%= product.product_id %>" class="btn btn-primary rounded-pill px-4 py-2 mb-4 ms-2">
-                                        <i class="fa fa-credit-card me-2"></i> Đăng nhập để mua ngay
-                                    </a>
-                                <% } %>
                             </div>
                             
                             <!-- Product Tabs -->

@@ -61,7 +61,7 @@
                 <div class="tab-class text-center">
                     <div class="row g-4">
                         <div class="col-lg-4 text-start">
-                            <h1>Sản phẩm nổi bật</h1>
+                            <h1>Sản phẩm mới nhất</h1>
                         </div>
                     </div>
                     <div class="row g-4 mt-4">
@@ -70,7 +70,7 @@
                                 <div class="col-md-6 col-lg-4 col-xl-3">
                                     <div class="rounded position-relative fruite-item">
                                         <div class="fruite-img">
-                                            <img src="<%= product.image_url %>" class="img-fluid w-100 rounded-top" alt="<%= product.name %>">
+                                            <img src="<%= product.image_url %>" class="img-fluid w-100 rounded-top product-image" alt="<%= product.name %>">
                                         </div>
                                         <div class="text-white bg-secondary px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">
                                             <%= product.category_name %>
@@ -131,6 +131,26 @@
 
     <!-- Template Javascript -->
     <script src="/client/js/main.js"></script>
+    <style>
+    .product-image {
+        height: 250px !important;
+        object-fit: cover;
+        object-position: center;
+    }
+    
+    .fruite-item {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .fruite-item .p-4 {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+</style>
     </body>
 
 </html>

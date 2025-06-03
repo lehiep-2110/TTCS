@@ -7,7 +7,7 @@
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Raleway:wght@600;800&display=swap" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css2?family=Open+San:wght@400;600&family=Raleway:wght@600;800&display=swap" rel="stylesheet"> 
 
     <!-- Icon Font Stylesheet -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"/>
@@ -22,6 +22,27 @@
 
     <!-- Template Stylesheet -->
     <link href="/client/css/style.css" rel="stylesheet">
+    
+    <style>
+        .product-image {
+            height: 250px !important;
+            object-fit: cover;
+            object-position: center;
+        }
+        
+        .fruite-item {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .fruite-item .p-4 {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+    </style>
 </head>
 <body>
     <!-- Header -->
@@ -109,7 +130,7 @@
                                             <div class="rounded position-relative fruite-item">
                                                 <div class="fruite-img">
                                                     <a href="/product/<%= product.product_id %>">
-                                                        <img src="<%= product.image_url %>" class="img-fluid w-100 rounded-top" alt="<%= product.name %>">
+                                                        <img src="<%= product.image_url %>" class="img-fluid w-100 rounded-top product-image" alt="<%= product.name %>">
                                                     </a>
                                                 </div>
                                                 <div class="text-white bg-secondary px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">
