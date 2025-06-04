@@ -1,29 +1,119 @@
-<form action="/admin/products/add" method="POST">
-  <div class="mb-3">
-    <label for="name" class="form-label">Tên bánh</label>
-    <input type="text" class="form-control" id="name" name="name" required />
-  </div>
-  <div class="mb-3">
-    <label for="description" class="form-label">Mô tả</label>
-    <textarea class="form-control" id="description" name="description"></textarea>
-  </div>
-  <div class="mb-3">
-    <label for="price" class="form-label">Giá</label>
-    <input type="number" class="form-control" id="price" name="price" required />
-  </div>
-  <div class="mb-3">
-    <label for="image_url" class="form-label">URL hình ảnh</label>
-    <input type="text" class="form-control" id="image_url" name="image_url" />
-  </div>
-  <div class="mb-3">
-    <label for="category_id" class="form-label">Loại bánh</label>
-    <select class="form-select" name="category_id" id="category_id" required>
-      <% categories.forEach(category => { %>
-        <option value="<%= category.category_id %>"><%= category.category_name %></option>
-      <% }) %>
-    </select>
-  </div>
-  <button type="submit" class="btn btn-primary">Thêm bánh</button>
-  <a href="/admin/product">Hủy</a>
-</form>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-plus-circle me-2"></i>Thêm sản phẩm mới
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form action="/admin/products/add" method="POST">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">
+                                        <i class="fas fa-birthday-cake me-1"></i>Tên bánh <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="name" name="name" placeholder="Nhập tên bánh" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="price" class="form-label">
+                                        <i class="fas fa-money-bill me-1"></i>Giá <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="number" class="form-control" id="price" name="price" placeholder="Nhập giá (VNĐ)" min="0" required />
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">
+                                <i class="fas fa-align-left me-1"></i>Mô tả
+                            </label>
+                            <textarea class="form-control" id="description" name="description" rows="3" placeholder="Nhập mô tả sản phẩm"></textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="category_id" class="form-label">
+                                        <i class="fas fa-list me-1"></i>Loại bánh <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" name="category_id" id="category_id" required>
+                                        <option value="">-- Chọn loại bánh --</option>
+                                        <% categories.forEach(category => { %>
+                                            <option value="<%= category.category_id %>"><%= category.category_name %></option>
+                                        <% }) %>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="image_url" class="form-label">
+                                        <i class="fas fa-image me-1"></i>URL hình ảnh
+                                    </label>
+                                    <input type="url" class="form-control" id="image_url" name="image_url" placeholder="https://example.com/image.jpg" />
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-center gap-2 mt-4">
+                            <a href="/admin/products" class="btn btn-secondary">
+                                <i class="fas fa-times me-1"></i>Hủy
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>Thêm bánh
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .container-fluid {
+        padding: 2rem 0;
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+    }
+
+    .card {
+        border: none;
+        border-radius: 10px;
+        margin: 0 auto;
+    }
     
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+        border-bottom: none;
+        text-align: center;
+    }
+    
+    .form-control, .form-select {
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        padding: 10px 12px;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+    
+    .form-label {
+        font-weight: 500;
+        color: #333;
+        margin-bottom: 5px;
+    }
+    
+    .btn {
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-weight: 500;  
+    } 
+</style></style>

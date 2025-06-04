@@ -209,6 +209,129 @@ class Product {
             throw error;
         }
     }
+
+    // Thay thế method getAllProductsWithPagination
+
+    async getAllProductsWithPagination({ searchKeyword = '', selectedCategory = null, sortBy = 'default', limit = 9, offset = 0 }) {
+        try {
+            let query = `
+                SELECT p.*, c.category_name 
+                FROM products p
+                LEFT JOIN category c ON p.category_id = c.category_id
+                WHERE p.status = 'active'
+            `;
+            let params = [];
+
+            // Thêm điều kiện tìm kiếm
+            if (searchKeyword && searchKeyword.trim()) {
+                query += ` AND p.name LIKE ?`;
+                params.push(`%${searchKeyword}%`);
+            }
+
+            // Thêm điều kiện lọc theo category
+            if (selectedCategory && selectedCategory !== null) {
+                query += ` AND p.category_id = ?`;
+                params.push(parseInt(selectedCategory));
+            }
+
+            // Thêm sắp xếp
+            switch (sortBy) {
+                case 'name':
+                    query += ` ORDER BY p.name ASC`;
+                    break;
+                case 'price-low':
+                    query += ` ORDER BY p.price ASC`;
+                    break;
+                case 'price-high':
+                    query += ` ORDER BY p.price DESC`;
+                    break;
+                default:
+                    query += ` ORDER BY p.created_at DESC`;
+            }
+
+            // Thêm LIMIT và OFFSET - sử dụng string interpolation thay vì params
+            query += ` LIMIT ${parseInt(limit)} OFFSET ${parseInt(offset)}`;
+
+            console.log('Query:', query);
+            console.log('Params:', params);
+
+            // Sử dụng db.query thay vì db.execute cho LIMIT/OFFSET
+            const [rows] = await db.query(query, params);
+            return rows;
+        } catch (error) {
+            console.error('Error getting products with pagination:', error);
+            throw error;
+        }
+    }
+
+    // Sửa lại method getTotalProductsCount
+    async getTotalProductsCount(searchKeyword = '', categoryId = null) {
+        try {
+            let query = `
+                SELECT COUNT(*) as total
+                FROM products p
+                WHERE p.status = 'active'
+            `;
+            let params = [];
+
+            if (searchKeyword && searchKeyword.trim()) {
+                query += ` AND p.name LIKE ?`;
+                params.push(`%${searchKeyword}%`);
+            }
+
+            if (categoryId && categoryId !== null) {
+                query += ` AND p.category_id = ?`;
+                params.push(parseInt(categoryId));
+            }
+
+            console.log('Count Query:', query);
+            console.log('Count Params:', params);
+
+            // Sử dụng db.query thay vì db.execute
+            const [rows] = await db.query(query, params);
+            return rows[0].total;
+        } catch (error) {
+            console.error('Error counting products:', error);
+            throw error;
+        }
+    }
+
+    // Thêm method này vào class Product
+
+    async getProductCountByCategory() {
+        try {
+            const query = `
+                SELECT 
+                    c.category_id,
+                    c.category_name,
+                    COUNT(p.product_id) as product_count
+                FROM category c
+                LEFT JOIN products p ON c.category_id = p.category_id AND p.status = 'active'
+                GROUP BY c.category_id, c.category_name
+                ORDER BY c.category_name
+            `;
+            const [rows] = await db.query(query);
+            return rows;
+        } catch (error) {
+            console.error('Error getting product count by category:', error);
+            throw error;
+        }
+    }
+
+    async getTotalActiveProductsCount() {
+        try {
+            const query = `
+                SELECT COUNT(*) as total
+                FROM products 
+                WHERE status = 'active'
+            `;
+            const [rows] = await db.query(query);
+            return rows[0].total;
+        } catch (error) {
+            console.error('Error getting total active products count:', error);
+            throw error;
+        }
+    }
 }
 
 module.exports = new Product();

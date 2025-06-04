@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shop - Hype Cake</title>
-    <!-- Google Web Fonts -->
+   <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Open+San:wght@400;600&family=Raleway:wght@600;800&display=swap" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Raleway:wght@600;800&display=swap" rel="stylesheet"> 
 
     <!-- Icon Font Stylesheet -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"/>
@@ -24,23 +24,252 @@
     <link href="/client/css/style.css" rel="stylesheet">
     
     <style>
+        /* Product Image - đồng bộ với home */
         .product-image {
             height: 250px !important;
             object-fit: cover;
             object-position: center;
         }
         
+        /* Fruite Item - đồng bộ với home */
         .fruite-item {
             height: 100%;
             display: flex;
             flex-direction: column;
+            transition: transform 0.3s ease;
         }
         
+        .fruite-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        /* Product content - đồng bộ với home */
         .fruite-item .p-4 {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+        }
+
+        /* Product info styling */
+        .product-info {
+            flex-grow: 1;
+            margin-bottom: 15px;
+        }
+
+        .product-info h4 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .product-info p {
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            color: #666;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Product actions styling */
+        .product-actions {
+            margin-top: auto;
+        }
+
+        .price-display {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        /* Form styling để match với home */
+        .add-to-cart-form {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .quantity-control {
+            display: flex;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            overflow: hidden;
+            background: white;
+        }
+
+        .quantity-btn {
+            border: none;
+            background: #f8f9fa;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .quantity-btn:hover {
+            background: #e9ecef;
+        }
+
+        .quantity-input {
+            border: none;
+            width: 40px;
+            text-align: center;
+            font-size: 0.9rem;
+            height: 30px;
+        }
+
+        .add-btn {
+            background: #007bff;
+            color: white;
+            border: 1px solid #007bff;
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .add-btn:hover {
+            background: #0056b3;
+            border-color: #0056b3;
+            color: white;
+        }
+
+        /* Pagination Styles */
+        .pagination {
+            margin-bottom: 0;
+            display: flex !important;
+            flex-direction: row !important;
+            list-style: none;
+            padding: 0;
+        }
+
+        .pagination .page-item {
+            display: inline-block !important;
+            margin: 0 2px;
+        }
+
+        .pagination .page-link {
+            color: #007bff;
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .pagination .page-link:hover {
+            color: #0056b3;
+            background-color: #e9ecef;
+            border-color: #adb5bd;
+            transform: translateY(-1px);
+        }
+
+        .pagination .page-item.active .page-link {
+            color: #fff;
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #6c757d;
+            background-color: #fff;
+            border-color: #dee2e6;
+            cursor: not-allowed;
+        }
+
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        /* Categories Sidebar Styles */
+        .fruite-categorie {
+            margin-bottom: 0;
+        }
+
+        .fruite-categorie li {
+            margin-bottom: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .fruite-categorie li:last-child {
+            border-bottom: none;
+        }
+
+        .fruite-name {
+            align-items: center;
+        }
+
+        .fruite-name a {
+            color: #333;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .fruite-name a:hover {
+            color: #007bff;
+        }
+
+        .fruite-name span {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .pagination .page-link {
+                padding: 6px 8px;
+                font-size: 0.875rem;
+            }
+            
+            .pagination .page-item {
+                margin: 0 1px;
+            }
+
+            .add-to-cart-form {
+                justify-content: center;
+                width: 100%;
+            }
+
+            .quantity-control {
+                margin-bottom: 8px;
+            }
+
+            .product-image {
+                height: 200px !important;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .product-info h4 {
+                font-size: 1rem;
+            }
+
+            .product-info p {
+                font-size: 0.85rem;
+            }
+
+            .add-btn {
+                font-size: 0.8rem;
+                padding: 5px 10px;
+            }
+
+            .product-image {
+                height: 180px !important;
+            }
         }
     </style>
 </head>
@@ -82,7 +311,6 @@
                                 <label for="fruits">Sắp xếp theo:</label>
                                 <select id="fruits" name="fruitlist" class="border-0 form-select-sm bg-light me-3" onchange="sortProducts(this.value)">
                                     <option value="default">Mặc định</option>
-                                    <option value="name">Tên A-Z</option>
                                     <option value="price-low">Giá thấp đến cao</option>
                                     <option value="price-high">Giá cao đến thấp</option>
                                 </select>
@@ -102,20 +330,22 @@
                                                     <a href="/product" class="<%= !selectedCategory ? 'text-primary fw-bold' : '' %>">
                                                         <i class="fas fa-list me-2"></i>Tất cả
                                                     </a>
-                                                    <span>(<%= products.length %>)</span>
+                                                    <span>(<%= totalActiveProducts || 0 %>)</span>
                                                 </div>
                                             </li>
-                                            <% categories.forEach(category => { %>
-                                                <li>
-                                                    <div class="d-flex justify-content-between fruite-name">
-                                                        <a href="/product?category=<%= category.category_id %>" 
-                                                           class="<%= selectedCategory == category.category_id ? 'text-primary fw-bold' : '' %>">
-                                                            <i class="fas fa-birthday-cake me-2"></i><%= category.category_name %>
-                                                        </a>
-                                                        <span>(<%= products.filter(p => p.category_id == category.category_id).length %>)</span>
-                                                    </div>
-                                                </li>
-                                            <% }) %>
+                                            <% if (categories && categories.length > 0) { %>
+                                                <% categories.forEach(category => { %>
+                                                    <li>
+                                                        <div class="d-flex justify-content-between fruite-name">
+                                                            <a href="/product?category=<%= category.category_id %>" 
+                                                               class="<%= selectedCategory == category.category_id ? 'text-primary fw-bold' : '' %>">
+                                                                <i class="fas fa-birthday-cake me-2"></i><%= category.category_name %>
+                                                            </a>
+                                                            <span>(<%= category.product_count || 0 %>)</span>
+                                                        </div>
+                                                    </li>
+                                                <% }) %>
+                                            <% } %>
                                         </ul>
                                     </div>
                                 </div>
@@ -137,22 +367,33 @@
                                                     <%= product.category_name %>
                                                 </div>
                                                 <div class="p-4 border border-secondary border-top-0 rounded-bottom">
-                                                    <h4><a href="/product/<%= product.product_id %>" class="text-decoration-none"><%= product.name %></a></h4>
-                                                    <p><%= product.description %></p>
-                                                    <div class="d-flex justify-content-between flex-lg-wrap">
-                                                        <p class="text-dark fs-5 fw-bold mb-0"><%= product.price.toLocaleString() %> VNĐ</p>
-                                                        
-                                                        <!-- Form thêm vào giỏ hàng với quantity -->
-                                                        <form method="POST" action="/cart/add/<%= product.product_id %>" class="d-flex align-items-center">
-                                                            <div class="input-group me-2" style="width: 100px;">
-                                                                <button class="btn btn-sm btn-outline-secondary" type="button" onclick="decreaseQuantity(this)">-</button>
-                                                                <input type="number" name="quantity" class="form-control form-control-sm text-center" value="1" min="1" max="99">
-                                                                <button class="btn btn-sm btn-outline-secondary" type="button" onclick="increaseQuantity(this)">+</button>
-                                                            </div>
-                                                            <button type="submit" class="btn border border-secondary rounded-pill px-3 text-primary">
-                                                                <i class="fa fa-shopping-bag me-2 text-primary"></i> Thêm
-                                                            </button>
-                                                        </form>
+                                                    <!-- Product Info -->
+                                                    <div class="product-info">
+                                                        <h4>
+                                                            <a href="/product/<%= product.product_id %>" class="text-decoration-none text-dark">
+                                                                <%= product.name %>
+                                                            </a>
+                                                        </h4>
+                                                        <p><%= product.description %></p>
+                                                    </div>
+
+                                                    <!-- Product Actions - đồng bộ với home -->
+                                                    <div class="product-actions">
+                                                        <div class="d-flex justify-content-between flex-lg-wrap">
+                                                            <p class="text-dark fs-5 fw-bold mb-0"><%= product.price.toLocaleString() %> VNĐ</p>
+                                                            
+                                                            <!-- Form thêm vào giỏ hàng - style giống home -->
+                                                            <form method="POST" action="/cart/add/<%= product.product_id %>" class="d-flex align-items-center">
+                                                                <div class="input-group me-2" style="width: 100px;">
+                                                                    <button class="btn btn-sm btn-outline-secondary" type="button" onclick="decreaseQuantity(this)">-</button>
+                                                                    <input type="number" name="quantity" class="form-control form-control-sm text-center" value="1" min="1" max="99">
+                                                                    <button class="btn btn-sm btn-outline-secondary" type="button" onclick="increaseQuantity(this)">+</button>
+                                                                </div>
+                                                                <button type="submit" class="btn border border-secondary rounded-pill px-3 text-primary">
+                                                                    <i class="fa fa-shopping-bag me-2 text-primary"></i> Thêm
+                                                                </button>
+                                                            </form>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -170,6 +411,101 @@
                                     </div>
                                 <% } %>
                             </div>
+                            
+                            <!-- Pagination Start -->
+                            <% if (pagination && pagination.totalPages > 1) { %>
+                                <div class="col-12">
+                                    <div class="pagination-container mt-5">
+                                        <nav aria-label="Page navigation">
+                                            <ul class="pagination justify-content-center">
+                                                <!-- Previous Button -->
+                                                <% if (pagination.hasPrev) { %>
+                                                    <li class="page-item">
+                                                        <a class="page-link" href="<%= buildPaginationUrl(pagination.prevPage) %>" aria-label="Previous">
+                                                            <span aria-hidden="true">&laquo;</span>
+                                                        </a>
+                                                    </li>
+                                                <% } else { %>
+                                                    <li class="page-item disabled">
+                                                        <span class="page-link">&laquo;</span>
+                                                    </li>
+                                                <% } %>
+
+                                                <!-- Page Numbers -->
+                                                <% 
+                                                let startPage = Math.max(1, pagination.currentPage - 2);
+                                                let endPage = Math.min(pagination.totalPages, pagination.currentPage + 2);
+                                                
+                                                if (endPage - startPage < 4) {
+                                                    if (startPage === 1) {
+                                                        endPage = Math.min(pagination.totalPages, startPage + 4);
+                                                    } else {
+                                                        startPage = Math.max(1, endPage - 4);
+                                                    }
+                                                }
+                                                %>
+
+                                                <!-- First page if not in range -->
+                                                <% if (startPage > 1) { %>
+                                                    <li class="page-item">
+                                                        <a class="page-link" href="<%= buildPaginationUrl(1) %>">1</a>
+                                                    </li>
+                                                    <% if (startPage > 2) { %>
+                                                        <li class="page-item disabled">
+                                                            <span class="page-link">...</span>
+                                                        </li>
+                                                    <% } %>
+                                                <% } %>
+
+                                                <!-- Page numbers in range -->
+                                                <% for (let i = startPage; i <= endPage; i++) { %>
+                                                    <li class="page-item <%= i === pagination.currentPage ? 'active' : '' %>">
+                                                        <% if (i === pagination.currentPage) { %>
+                                                            <span class="page-link"><%= i %></span>
+                                                        <% } else { %>
+                                                            <a class="page-link" href="<%= buildPaginationUrl(i) %>"><%= i %></a>
+                                                        <% } %>
+                                                    </li>
+                                                <% } %>
+
+                                                <!-- Last page if not in range -->
+                                                <% if (endPage < pagination.totalPages) { %>
+                                                    <% if (endPage < pagination.totalPages - 1) { %>
+                                                        <li class="page-item disabled">
+                                                            <span class="page-link">...</span>
+                                                        </li>
+                                                    <% } %>
+                                                    <li class="page-item">
+                                                        <a class="page-link" href="<%= buildPaginationUrl(pagination.totalPages) %>"><%= pagination.totalPages %></a>
+                                                    </li>
+                                                <% } %>
+
+                                                <!-- Next Button -->
+                                                <% if (pagination.hasNext) { %>
+                                                    <li class="page-item">
+                                                        <a class="page-link" href="<%= buildPaginationUrl(pagination.nextPage) %>" aria-label="Next">
+                                                            <span aria-hidden="true">&raquo;</span>
+                                                        </a>
+                                                    </li>
+                                                <% } else { %>
+                                                    <li class="page-item disabled">
+                                                        <span class="page-link">&raquo;</span>
+                                                    </li>
+                                                <% } %>
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                    
+                                    <!-- Pagination Info -->
+                                    <div class="text-center mt-3">
+                                        <small class="text-muted">
+                                            Hiển thị <%= ((pagination.currentPage - 1) * pagination.limit) + 1 %> - <%= Math.min(pagination.currentPage * pagination.limit, pagination.totalProducts) %> 
+                                            trong tổng số <%= pagination.totalProducts %> sản phẩm
+                                        </small>
+                                    </div>
+                                </div>
+                            <% } %>
+                            <!-- Pagination End -->
                         </div>
                     </div>
                 </div>
@@ -181,75 +517,90 @@
     <!-- Footer -->
     <%- include('../layout/footer') -%>
 
-    <!-- ⚠️ SỬA: Thay thế JavaScript để dropdown hoạt động -->
-    <!-- jQuery (có thể giữ từ local) -->
-    <script src="/client/js/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="/client/lib/easing/easing.min.js"></script>
+        <script src="/client/lib/waypoints/waypoints.min.js"></script>
+        <script src="/client/lib/lightbox/js/lightbox.min.js"></script>
+        <script src="/client/lib/owlcarousel/owl.carousel.min.js"></script>
     
-    <!-- ✅ QUAN TRỌNG: Bootstrap JavaScript từ CDN để đảm bảo dropdown hoạt động -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Other libraries -->
-    <script src="/client/lib/lightbox/js/lightbox.min.js"></script>
-    <script src="/client/lib/owlcarousel/owl.carousel.min.js"></script>
-    
-    <script>
+    <!-- Cập nhật phần script để đồng bộ với home -->
+<script>
         // Sort products function
         function sortProducts(sortBy) {
             const urlParams = new URLSearchParams(window.location.search);
             urlParams.set('sort', sortBy);
+            urlParams.set('page', '1');
             window.location.search = urlParams.toString();
         }
 
-        // Quantity buttons functions
+        // Quantity buttons functions - giống home
         function decreaseQuantity(button) {
             const input = button.parentNode.querySelector('input[name="quantity"]');
-            if (input.value > 1) {
-                input.value = parseInt(input.value) - 1;
+            const currentValue = parseInt(input.value);
+            if (currentValue > 1) {
+                input.value = currentValue - 1;
             }
         }
         
         function increaseQuantity(button) {
             const input = button.parentNode.querySelector('input[name="quantity"]');
-            if (input.value < 99) {
-                input.value = parseInt(input.value) + 1;
+            const currentValue = parseInt(input.value);
+            if (currentValue < 99) {
+                input.value = currentValue + 1;
             }
         }
 
         // DOM Ready functions
         document.addEventListener('DOMContentLoaded', function() {
-            // ✅ THÊM: Debug dropdown functionality
-            console.log('Bootstrap loaded:', typeof bootstrap !== 'undefined');
-            console.log('Dropdown elements:', document.querySelectorAll('[data-bs-toggle="dropdown"]'));
-            
-            // Initialize dropdowns manually if needed
-            document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(function(element) {
-                new bootstrap.Dropdown(element);
+            // Set sort dropdown value từ URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const currentSort = urlParams.get('sort') || 'default';
+            const sortSelect = document.getElementById('fruits');
+            if (sortSelect) {
+                sortSelect.value = currentSort;
+            }
+
+            // Handle form submission với loading state
+            document.querySelectorAll('form[action*="/cart/add/"]').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    const originalHTML = submitBtn.innerHTML;
+                    
+                    // Disable button và show loading
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i>Đang thêm...';
+                    
+                    // Re-enable sau 2 giây
+                    setTimeout(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalHTML;
+                    }, 2000);
+                });
             });
 
-            // Prevent form submission khi click quantity buttons
+            // Prevent quantity buttons from submitting form
             document.querySelectorAll('.btn-outline-secondary').forEach(button => {
                 if (button.textContent.trim() === '+' || button.textContent.trim() === '-') {
                     button.addEventListener('click', function(e) {
                         e.preventDefault();
+                        e.stopPropagation();
                     });
                 }
             });
 
-            // Handle form submission với loading
-            document.querySelectorAll('form[action*="/cart/add/"]').forEach(form => {
-                form.addEventListener('submit', function(e) {
-                    const submitBtn = form.querySelector('button[type="submit"]');
-                    submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i>Đang thêm...';
-                    
-                    // Re-enable sau 3 giây để tránh spam
-                    setTimeout(() => {
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = '<i class="fa fa-shopping-bag me-2 text-primary"></i> Thêm';
-                    }, 3000);
+            // Validate quantity input
+            document.querySelectorAll('input[name="quantity"]').forEach(input => {
+                input.addEventListener('change', function() {
+                    let value = parseInt(this.value);
+                    if (isNaN(value) || value < 1) {
+                        this.value = 1;
+                    } else if (value > 99) {
+                        this.value = 99;
+                    }
                 });
             });
         });
-    </script>
+</script>
 </body>
 </html>

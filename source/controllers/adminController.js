@@ -1,20 +1,9 @@
+const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const Product = require('../models/product');
 
 class AdminController {
-    getAdminPage(req, res) {
-        try {
-            res.render('admin/dashboard/dashboard', {
-                pageTitle: 'Admin Dashboard',
-                user: req.session.user
-            });
-        } catch (error) {
-            console.error('Lỗi load admin dashboard:', error);
-            res.status(500).render('error/500', {
-                pageTitle: '500 - Lỗi server'
-            });
-        }
-    }
+
 
     async getAdminUserPage(req, res) {
         try {
@@ -34,10 +23,18 @@ class AdminController {
         res.render('admin/user/add', { roles });
     }
 
-    // SỬA: Đổi tên method để match với routes
     async handleAddUser(req, res) {
         try {
-            const { username, email } = req.body;
+            const { username, email, password, full_name, role, phone, address } = req.body;
+
+            // Validation
+            if (!username || !email || !password || !full_name) {
+                return res.status(400).send('Vui lòng nhập đầy đủ thông tin bắt buộc');
+            }
+
+            if (password.length < 6) {
+                return res.status(400).send('Mật khẩu phải có ít nhất 6 ký tự');
+            }
 
             const isUsernameExists = await User.isUsernameTaken(username);
             if (isUsernameExists) {
@@ -49,7 +46,20 @@ class AdminController {
                 return res.status(400).send('Email đã tồn tại');
             }
 
-            await User.createUser(req.body);
+            const hashedPassword = await bcrypt.hash(password, 10);
+
+            const userData = {
+                username,
+                email,
+                password: hashedPassword, 
+                full_name,
+                role: role || 'customer',
+                phone: phone || null,
+                address: address || null
+            };
+
+            console.log('Admin creating user with hashed password');
+            await User.createUser(userData);
             res.redirect('/admin/users');
         } catch (error) {
             console.error('Lỗi thêm user:', error);
@@ -71,12 +81,12 @@ class AdminController {
         }
     }
 
-    // SỬA: Đổi tên method để match với routes
     async handleEditUser(req, res) {
         try {
             const userId = req.params.id;
-            const { username, email } = req.body;
+            const { username, email, full_name, role, phone, address, password } = req.body;
 
+            // Check conflicts
             const isUsernameExists = await User.isUsernameTakenByOther(username, userId);
             if (isUsernameExists) {
                 return res.status(400).send('Username đã tồn tại');
@@ -86,8 +96,23 @@ class AdminController {
             if (isEmailExists) {
                 return res.status(400).send('Email đã tồn tại');
             }
+            let userData = {
+                username,
+                email,
+                full_name,
+                role: role || 'customer',
+                phone: phone || null,
+                address: address || null
+            };
+            if (password && password.trim() !== '') {
+                if (password.length < 6) {
+                    return res.status(400).send('Mật khẩu phải có ít nhất 6 ký tự');
+                }
+                userData.password = await bcrypt.hash(password, 10);
+                console.log('Admin updating user with new hashed password');
+            }
 
-            await User.updateUser(userId, req.body);
+            await User.updateUser(userId, userData);
             res.redirect('/admin/users');
         } catch (error) {
             console.error('Lỗi cập nhật user:', error);
@@ -95,7 +120,6 @@ class AdminController {
         }
     }
 
-    // SỬA: Đổi tên method để match với routes
     async handleDeleteUser(req, res) {
         try {
             await User.deleteUser(req.params.id);
@@ -130,7 +154,6 @@ class AdminController {
         }
     }
 
-    // SỬA: Thêm các methods cho products
     async handleAddProduct(req, res) {
         try {
             await Product.createProduct(req.body);
@@ -143,7 +166,7 @@ class AdminController {
 
     async showEditProductForm(req, res) {
         try {
-            const product = await Product.getProductById(req.params.id);
+            const product = await Product.getProductByIdForAdmin(req.params.id);
             const categories = await Product.getAllCategories();
             res.render('admin/product/edit', { product, categories });
         } catch (error) {
@@ -172,7 +195,6 @@ class AdminController {
         }
     }
 
-    // Sửa lại method handleRestoreProduct
     async handleRestoreProduct(req, res) {
         try {
             const productId = req.params.id;

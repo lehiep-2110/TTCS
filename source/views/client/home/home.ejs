@@ -37,23 +37,13 @@
         </div>
         <!-- Spinner End -->
 
-
         <!-- Navbar start -->
         <%- include('../layout/header') -%>
         <!-- Navbar End -->
 
-
-
-
         <!-- Hero Start -->
         <%- include('../layout/banner') -%>
         <!-- Hero End -->
-
-
-        <!-- Featurs Section Start -->
-        <!-- <%- include('../layout/feature'); -%> -->
-        <!-- Featurs Section End -->
-
 
         <!-- Fruits Shop Start-->
         <div class="container-fluid fruite py-5">
@@ -70,13 +60,21 @@
                                 <div class="col-md-6 col-lg-4 col-xl-3">
                                     <div class="rounded position-relative fruite-item">
                                         <div class="fruite-img">
-                                            <img src="<%= product.image_url %>" class="img-fluid w-100 rounded-top product-image" alt="<%= product.name %>">
+                                            <!-- Link vào ảnh sản phẩm -->
+                                            <a href="/product/<%= product.product_id %>">
+                                                <img src="<%= product.image_url %>" class="img-fluid w-100 rounded-top product-image" alt="<%= product.name %>">
+                                            </a>
                                         </div>
                                         <div class="text-white bg-secondary px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">
                                             <%= product.category_name %>
                                         </div>
                                         <div class="p-4 border border-secondary border-top-0 rounded-bottom">
-                                            <h4><%= product.name %></h4>
+                                            <!-- Link vào tên sản phẩm -->
+                                            <h4>
+                                                <a href="/product/<%= product.product_id %>" class="text-decoration-none text-dark">
+                                                    <%= product.name %>
+                                                </a>
+                                            </h4>
                                             <p><%= product.description %></p>
                                             <div class="d-flex justify-content-between flex-lg-wrap">
                                                 <p class="text-dark fs-5 fw-bold mb-0"><%= product.price.toLocaleString() %> VNĐ</p>
@@ -108,49 +106,122 @@
         </div>
         <!-- Fruits Shop End-->
 
-
-
-
-
         <!-- Footer Start -->
         <%- include('../layout/footer') -%>
         <!-- Footer End -->
 
-
         <!-- Back to Top -->
         <a href="#" class="btn btn-primary border-3 border-primary rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>   
 
-        
-    <!-- JavaScript Libraries -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="lib/easing/easing.min.js"></script>
-    <script src="lib/waypoints/waypoints.min.js"></script>
-    <script src="lib/lightbox/js/lightbox.min.js"></script>
-    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+        <!-- JavaScript Libraries -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="/client/lib/easing/easing.min.js"></script>
+        <script src="/client/lib/waypoints/waypoints.min.js"></script>
+        <script src="/client/lib/lightbox/js/lightbox.min.js"></script>
+        <script src="/client/lib/owlcarousel/owl.carousel.min.js"></script>
 
-    <!-- Template Javascript -->
-    <script src="/client/js/main.js"></script>
-    <style>
-    .product-image {
-        height: 250px !important;
-        object-fit: cover;
-        object-position: center;
-    }
-    
-    .fruite-item {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .fruite-item .p-4 {
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
-</style>
+        <!-- Template Javascript -->
+        <script src="/client/js/main.js"></script>
+
+        <!-- Custom JavaScript for quantity controls -->
+        <script>
+        // Quantity buttons functions
+        function decreaseQuantity(button) {
+            const input = button.parentNode.querySelector('input[name="quantity"]');
+            const currentValue = parseInt(input.value);
+            if (currentValue > 1) {
+                input.value = currentValue - 1;
+            }
+        }
+
+        function increaseQuantity(button) {
+            const input = button.parentNode.querySelector('input[name="quantity"]');
+            const currentValue = parseInt(input.value);
+            if (currentValue < 99) {
+                input.value = currentValue + 1;
+            }
+        }
+
+        // DOM Ready functions
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle form submission với loading state
+            document.querySelectorAll('form[action*="/cart/add/"]').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    const originalHTML = submitBtn.innerHTML;
+                    
+                    // Disable button và show loading
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i>Đang thêm...';
+                    
+                    // Re-enable sau 2 giây
+                    setTimeout(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalHTML;
+                    }, 2000);
+                });
+            });
+
+            // Prevent quantity buttons from submitting form
+            document.querySelectorAll('.btn-outline-secondary').forEach(button => {
+                if (button.textContent.trim() === '+' || button.textContent.trim() === '-') {
+                    button.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    });
+                }
+            });
+
+            // Validate quantity input
+            document.querySelectorAll('input[name="quantity"]').forEach(input => {
+                input.addEventListener('change', function() {
+                    let value = parseInt(this.value);
+                    if (isNaN(value) || value < 1) {
+                        this.value = 1;
+                    } else if (value > 99) {
+                        this.value = 99;
+                    }
+                });
+            });
+        });
+        </script>
+
+        <style>
+        .product-image {
+            height: 250px !important;
+            object-fit: cover;
+            object-position: center;
+        }
+        
+        .fruite-item {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .fruite-item .p-4 {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Hover effect cho links */
+        .fruite-item h4 a:hover {
+            color: #007bff !important;
+            transition: color 0.3s ease;
+        }
+
+        .fruite-img a {
+            display: block;
+        }
+
+        .fruite-img a:hover img {
+            transform: scale(1.05);
+            transition: transform 0.3s ease;
+        }
+        </style>
     </body>
 
 </html>

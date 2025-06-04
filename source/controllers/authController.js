@@ -69,7 +69,7 @@ class AuthController {
             const redirectTo = req.session.redirectTo || (user.role === 'admin' ? '/admin' : '/');
             delete req.session.redirectTo;
             
-            res.redirect(redirectTo + '?success=Đăng nhập thành công');
+            res.redirect(redirectTo);
 
         } catch (error) {
             console.error('Lỗi đăng nhập:', error);
@@ -84,9 +84,9 @@ class AuthController {
         req.session.destroy((err) => {
             if (err) {
                 console.error('Lỗi đăng xuất:', err);
-                return res.redirect('/?error=Lỗi đăng xuất');
+                return res.redirect('/');
             }
-            res.redirect('/?success=Đã đăng xuất thành công');
+            res.redirect('/');
         });
     }
 
@@ -177,7 +177,7 @@ class AuthController {
                 req.session.cartCount = 0;
             }
 
-            res.redirect('/?success=Đăng ký thành công!');
+            res.redirect('/');
 
         } catch (error) {
             console.error('Lỗi đăng ký:', error);

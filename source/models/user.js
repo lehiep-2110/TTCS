@@ -23,8 +23,14 @@ class User {
 
     async getUserById(userId) {
         try {
-            const [rows] = await db.query('SELECT * FROM users WHERE user_id = ?', [userId]);
-            return rows[0];
+            const query = `
+                SELECT user_id, username, email, password, full_name, phone, address, role, created_at, updated_at
+                FROM users 
+                WHERE user_id = ?
+            `;
+            
+            const [rows] = await db.query(query, [userId]);
+            return rows.length > 0 ? rows[0] : null;
         } catch (err) {
             console.error('Lỗi getUserById:', err);
             throw err;
@@ -32,21 +38,32 @@ class User {
     }
 
     async createUser(userData) {
-        // SỬA: Sử dụng full_name thay vì fullname
         const { username, email, password, full_name, phone, address, role } = userData;
         try {
+            const userRole = role || 'customer';
+            
             const query = `
                 INSERT INTO users (username, email, password, full_name, phone, address, role, created_at) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
             `;
-            const [result] = await db.query(query, [username, email, password, full_name, phone || null, address || null, role]);
+            const [result] = await db.query(query, [
+                username, 
+                email, 
+                password, 
+                full_name, 
+                phone || null, 
+                address || null, 
+                userRole
+            ]);
             
             return {
                 user_id: result.insertId,
                 username,
                 email,
                 full_name,
-                role
+                phone: phone || null,
+                address: address || null,
+                role: userRole
             };
         } catch (err) {
             console.error('Lỗi createUser:', err);
@@ -54,26 +71,53 @@ class User {
         }
     }
 
+    async updateUserProfile(userId, userData) {
+        const { username, email, full_name, phone, address } = userData;
+        try {
+            const query = `
+                UPDATE users 
+                SET username = ?, email = ?, full_name = ?, phone = ?, address = ?, updated_at = NOW()
+                WHERE user_id = ?
+            `;
+            const params = [username, email, full_name, phone, address, userId];
+            
+            console.log('Updating user profile:', { userId, userData });
+            
+            const [result] = await db.query(query, params);
+            return result;
+        } catch (err) {
+            console.error('Lỗi updateUserProfile:', err);
+            throw err;
+        }
+    }
+
+    // Cập nhật method updateUser để handle password correctly
     async updateUser(userId, userData) {
-        // SỬA: Sử dụng full_name thay vì fullname
         const { username, email, full_name, password, role, phone, address } = userData;
         try {
             let query, params;
             
+            // FIX: Đảm bảo role có giá trị hợp lệ
+            const userRole = role || 'customer';
+            
             if (password) {
+                // Có mật khẩu mới - update tất cả
                 query = `
                     UPDATE users 
                     SET username = ?, email = ?, full_name = ?, password = ?, role = ?, phone = ?, address = ?, updated_at = NOW()
                     WHERE user_id = ?
                 `;
-                params = [username, email, full_name, password, role, phone, address, userId];
+                params = [username, email, full_name, password, userRole, phone || null, address || null, userId];
+                console.log('Updating user with password change');
             } else {
+                // Không có mật khẩu mới - update trừ password
                 query = `
                     UPDATE users 
                     SET username = ?, email = ?, full_name = ?, role = ?, phone = ?, address = ?, updated_at = NOW()
                     WHERE user_id = ?
                 `;
-                params = [username, email, full_name, role, phone, address, userId];
+                params = [username, email, full_name, userRole, phone || null, address || null, userId];
+                console.log('Updating user without password change');
             }
             
             const [result] = await db.query(query, params);
@@ -144,6 +188,27 @@ class User {
             return rows.length > 0;
         } catch (err) {
             console.error('Lỗi isEmailTakenByOther:', err);
+            throw err;
+        }
+    }
+
+    async updatePassword(userId, hashedPassword) {
+        try {
+            const query = `
+                UPDATE users 
+                SET password = ?, updated_at = NOW()
+                WHERE user_id = ?
+            `;
+            
+            const [result] = await db.query(query, [hashedPassword, userId]);
+            
+            if (result.affectedRows === 0) {
+                throw new Error('Không tìm thấy user để cập nhật mật khẩu');
+            }
+            
+            return result;
+        } catch (err) {
+            console.error('Lỗi updatePassword:', err);
             throw err;
         }
     }

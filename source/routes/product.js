@@ -3,7 +3,7 @@ const router = express.Router();
 const productController = require('../controllers/productController');
 
 // /product - danh sách sản phẩm
-router.get('/', productController.getShopPage);
+router.get('/', productController.getProductsPage);
 
 // Route tìm kiếm sản phẩm
 router.get('/search', productController.searchProducts);

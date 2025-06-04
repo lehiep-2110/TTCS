@@ -1,12 +1,13 @@
 const User = require('../models/user');
 const Order = require('../models/order');
+const bcrypt = require('bcrypt');
 
 class UserController {
     async getProfile(req, res) {
         try {
             const user = await User.getUserById(req.session.user.user_id);
             res.render('client/user/profile', {
-                pageTitle: 'Hồ sơ cá nhân',
+                pageTitle: 'Profile',
                 user: user,
                 success: req.query.success || null,
                 error: req.query.error || null
@@ -23,79 +24,83 @@ class UserController {
             const { username, email, full_name, phone, address } = req.body;
 
             if (!username || !email || !full_name) {
-                return res.redirect('/login/profile?error=Vui lòng nhập đầy đủ thông tin bắt buộc');
+                return res.redirect('/user/profile?error=Vui lòng nhập đầy đủ thông tin bắt buộc');
             }
 
             // Check conflicts
             const usernameExists = await User.isUsernameTakenByOther(username, userId);
             if (usernameExists) {
-                return res.redirect('/login/profile?error=Tên đăng nhập đã được sử dụng');
+                return res.redirect('/user/profile?error=Tên đăng nhập đã được sử dụng');
             }
 
             const emailExists = await User.isEmailTakenByOther(email, userId);
             if (emailExists) {
-                return res.redirect('/login/profile?error=Email đã được sử dụng');
+                return res.redirect('/user/profile?error=Email đã được sử dụng');
             }
 
-            await User.updateUser(userId, { username, email, full_name, phone, address });
+            // FIX: Chỉ update thông tin cá nhân, KHÔNG update role
+            await User.updateUserProfile(userId, { 
+                username, 
+                email, 
+                full_name, 
+                phone: phone || null, 
+                address: address || null 
+            });
             
             // Update session
             req.session.user.username = username;
             req.session.user.email = email;
             req.session.user.full_name = full_name;
-            req.session.user.phone = phone;
-            req.session.user.address = address;
+            req.session.user.phone = phone || null;
+            req.session.user.address = address || null;
+            // QUAN TRỌNG: KHÔNG update role trong session
             
-            res.redirect('/login/profile?success=Cập nhật thành công');
+            res.redirect('/user/profile?success=Cập nhật thành công');
         } catch (error) {
             console.error('Lỗi cập nhật profile:', error);
-            res.redirect('/login/profile?error=Cập nhật thất bại');
+            res.redirect('/user/profile?error=Cập nhật thất bại');
         }
     }
 
-    async getOrders(req, res) {
+    async changePassword(req, res) {
         try {
             const userId = req.session.user.user_id;
-            const orders = await Order.getOrdersByUserId(userId);
-            
-            res.render('client/user/orders', {
-                pageTitle: 'Đơn hàng của tôi',
-                orders,
-                user: req.session.user // Thêm user info
-            });
-        } catch (error) {
-            console.error('Lỗi get orders:', error);
-            res.render('client/user/orders', {
-                pageTitle: 'Đơn hàng của tôi',
-                orders: [],
-                user: req.session.user
-            });
-        }
-    }
+            const { currentPassword, newPassword, confirmPassword } = req.body;
 
-    async getOrderDetail(req, res) {
-        try {
-            const orderId = req.params.id;
-            const userId = req.session.user.user_id;
-            const order = await Order.getOrderById(orderId);
-            
-            if (!order || order.user_id !== userId) {
-                return res.status(404).render('client/user/order-detail', {
-                    pageTitle: 'Chi tiết đơn hàng',
-                    order: null
-                });
+            // Validation đơn giản
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                return res.redirect('/user/profile?error=Vui lòng nhập đầy đủ thông tin');
             }
-            
-            res.render('client/user/order-detail', {
-                pageTitle: `Chi tiết đơn hàng #${order.order_id}`,
-                order
-            });
+
+            if (newPassword.length < 6) {
+                return res.redirect('/user/profile?error=Mật khẩu mới phải có ít nhất 6 ký tự');
+            }
+
+            if (newPassword !== confirmPassword) {
+                return res.redirect('/user/profile?error=Mật khẩu mới và xác nhận mật khẩu không khớp');
+            }
+
+            // Lấy thông tin user từ database
+            const user = await User.getUserById(userId);
+            if (!user) {
+                return res.redirect('/user/profile?error=Không tìm thấy thông tin người dùng');
+            }
+
+            // Kiểm tra mật khẩu hiện tại có đúng không
+            const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
+            if (!isCurrentPasswordValid) {
+                return res.redirect('/user/profile?error=Mật khẩu hiện tại không đúng');
+            }
+
+            // Hash mật khẩu mới và cập nhật
+            const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+            await User.updatePassword(userId, hashedNewPassword);
+
+            res.redirect('/user/profile?success=Đổi mật khẩu thành công');
+
         } catch (error) {
-            console.error('Lỗi get order detail:', error);
-            res.status(500).render('client/user/order-detail', {
-                pageTitle: 'Chi tiết đơn hàng',
-                order: null
-            });
+            console.error('Lỗi đổi mật khẩu:', error);
+            res.redirect('/user/profile?error=Lỗi server, vui lòng thử lại');
         }
     }
 }
